@@ -19,27 +19,34 @@ const davisCupFortuna = new TennisFortuna(
   "https://www.ifortuna.cz/sazeni/tenis/m-davis-cup-dvouhra"
 );
 const main = async () => {
-  const [tipsportData, fortunaData] = await Promise.all([
-    firstCzechLeaqueTipsport.getData(),
-    firstCzechLeagueFortuna.getData(),
-  ]);
+  try {
+    const tipsportData = await firstCzechLeaqueTipsport.getData();
+    const fortunaData = await firstCzechLeagueFortuna.getData();
 
-  const resultFoobal = calculateArbitrageBetting(
-    [...tipsportData, ...fortunaData] as SerializedDataI[],
-    30000
-  );
-  console.log(resultFoobal);
-  const [tennisTipsportData, tennisFortunaData] = await Promise.all([
-    davisCupTipsport.getData(),
-    davisCupFortuna.getData(),
-  ]);
+    const resultFoobal = await calculateArbitrageBetting(
+      [
+        ...((tipsportData as SerializedDataI[]) ?? []),
+        ...((fortunaData as SerializedDataI[]) ?? []),
+      ] as SerializedDataI[],
+      30000
+    );
+    console.log("resultFoobal", resultFoobal);
 
-  const resultTennis = calculateArbitrageBetting(
-    [...tennisTipsportData, ...tennisFortunaData] as SerializedDataI[],
-    30000
-  );
+    const tennisTipsportData = await davisCupTipsport.getData();
+    const tennisFortunaData = await davisCupFortuna.getData();
 
-  console.log(resultTennis);
+    const resultTennis = await calculateArbitrageBetting(
+      [
+        ...((tennisTipsportData as SerializedDataI[]) ?? []),
+        ...((tennisFortunaData as SerializedDataI[]) ?? []),
+      ] as SerializedDataI[],
+      2000
+    );
+
+    console.log("resultTennis", resultTennis);
+  } catch (error) {
+    console.error("Chyba při scrapingu:", error);
+  }
 };
 
 main();

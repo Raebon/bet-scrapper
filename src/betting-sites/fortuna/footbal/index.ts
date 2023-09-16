@@ -4,10 +4,13 @@ import { webScrapping } from "../../../utils/web-scrapping";
 import { getTeamName } from "../../../voc";
 import { targetOddsElements, targetTeamNameElements } from "../config";
 
+const className = "FootbalFortuna";
 export class FootbalFortuna {
   url: string;
+  numberOfScrapping: number;
   constructor(url: string) {
     this.url = url;
+    this.numberOfScrapping = 0;
   }
   public getData = async () => {
     try {
@@ -17,10 +20,14 @@ export class FootbalFortuna {
         targetOddsElements
       );
       const { names, odds } = scrappedData;
-      return this._serializeData(names, odds);
+      return await this._serializeData(names, odds);
     } catch (error) {
-      console.log(error);
-      return "error";
+      if (this.numberOfScrapping < 10) {
+        await this.getData();
+      } else {
+        console.log(className, error);
+        return await this._serializeData([], []);
+      }
     }
   };
 
@@ -28,7 +35,7 @@ export class FootbalFortuna {
     names: string[],
     odds: string[]
   ): Promise<SerializedDataI[]> => {
-    const oddsData = splitIntoArraysOfArray(odds, 1, 6);
+    const oddsData = await splitIntoArraysOfArray(odds, 1, 6);
     const namesData = names;
     const serializedData: any[] = [];
     oddsData.map((item, index) => {
@@ -45,6 +52,10 @@ export class FootbalFortuna {
       };
       serializedData.push(val);
     });
+    console.log(className, serializedData.length);
+    if (serializedData.length === 0) {
+      throw Error(`Nejsou žádné data. Možná event skončil ${this.url}`);
+    }
     return serializedData;
   };
 }

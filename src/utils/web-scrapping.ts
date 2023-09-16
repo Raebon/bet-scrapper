@@ -10,12 +10,20 @@ export const webScrapping = async (
   targetTeamNameElements: string,
   targetOddsElements: string
 ): Promise<WebScrappingRes> => {
+  return internalScrapeMethod(url, targetTeamNameElements, targetOddsElements);
+};
+
+const internalScrapeMethod = async (
+  url: string,
+  targetTeamNameElements: string,
+  targetOddsElements: string
+) => {
   const browser = await puppeteer.launch({
     headless: "new",
   });
   const page = await browser.newPage();
   await page.goto(url);
-
+  //console.log(page);
   const targetTeamNameElementsPupperteered = await page.$x(
     targetTeamNameElements
   );
@@ -47,6 +55,7 @@ export const webScrapping = async (
       odds.push(textContent);
     }
   }
+
   await browser.close();
   return {
     names,

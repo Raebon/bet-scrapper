@@ -6,7 +6,15 @@ interface SerializedChosenDataI {
   margin?: number;
 }
 
-export const calculateArbitrageBetting = (
+interface DivideAmountI {
+  site: string;
+  name: string;
+  amount: number;
+  profit: number;
+  rate: number;
+}
+
+export const calculateArbitrageBetting = async (
   data: SerializedDataI[],
   desiredBet: number
 ) => {
@@ -54,12 +62,6 @@ export const calculateArbitrageBetting = (
   return divideAmount(calculatedMarginAndEvaluated, desiredBet);
 };
 
-interface DivideAmountI {
-  site: string;
-  name: string;
-  amount: number;
-  profit: number;
-}
 const divideAmount = (
   data: SerializedChosenDataI[] | undefined,
   desiredBet: number
@@ -80,12 +82,14 @@ const divideAmount = (
       name: item.home.name,
       amount: homeAmout,
       profit: homeAmout * item.home.rate - desiredBet,
+      rate: item.home.rate,
     };
     const host = {
       site: item.host.site!,
       name: item.host.name,
       amount: (hostRateInversion / margin) * desiredBet,
       profit: hostAmout * item.host.rate - desiredBet,
+      rate: item.host.rate,
     };
     resultData.push([{ ...home }, { ...host }]);
   });
@@ -95,10 +99,10 @@ const divideAmount = (
 const calculateMarginAndEvaluate = (
   data: SerializedChosenDataI[]
 ): SerializedChosenDataI[] | undefined => {
-  const results: SerializedChosenDataI[] | undefined = [];
+  const results: SerializedChosenDataI[] = [];
   /*   data.push({
-    home: { site: "fortuna", name: "Slavia Praha", rate: 1.42 },
-    host: { site: "tipsport", name: "Sparta Praha", rate: 3.93 },
+    home: { site: "fortuna", name: "y", rate: 1.42 },
+    host: { site: "tipsport", name: "x", rate: 3.93 },
   }); */
   data.forEach((item) => {
     if (item) {
@@ -170,7 +174,7 @@ const chooseBetterRate = (data: SerializedDataI[]) => {
   };
 };
 
-export const separateBySiteAndCombineData = (data: SerializedDataI[]) => {
+const separateBySiteAndCombineData = (data: SerializedDataI[]) => {
   const separatedData: any = {};
 
   data.forEach((item) => {

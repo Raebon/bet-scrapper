@@ -6,5 +6,8 @@ const VocMap = new Map([
 
 //todo: metoda která vrátí celý název podle klíče
 export const getTeamName = (name: string) => {
+  if (!name) {
+    return "nevsazet";
+  }
   return VocMap.has(name) ? VocMap.get(name) : name;
 };
