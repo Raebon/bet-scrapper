@@ -8,9 +8,11 @@ const className = "FootbalFortuna";
 export class FootbalFortuna {
   url: string;
   numberOfScrapping: number;
-  constructor(url: string) {
+  newEvaluation: boolean;
+  constructor(url: string, newEvaluation: boolean) {
     this.url = url;
     this.numberOfScrapping = 0;
+    this.newEvaluation = newEvaluation;
   }
   public getData = async () => {
     try {
@@ -35,27 +37,64 @@ export class FootbalFortuna {
     names: string[],
     odds: string[]
   ): Promise<SerializedDataI[]> => {
-    const oddsData = await splitIntoArraysOfArray(odds, 1, 6);
-    const namesData = names;
+    const startColumn =
+      this.url === "https://www.ifortuna.cz/sazeni/fotbal/fortuna-liga" ? 1 : 0;
+    const oddsData = (
+      await splitIntoArraysOfArray(odds, startColumn, 6)
+    ).reverse();
+    const namesData = names.reverse();
     const serializedData: any[] = [];
+    let numberOfLiveMatches = 0;
     oddsData.map((item, index) => {
+      if (!namesData[index]) {
+        numberOfLiveMatches += 1;
+      }
+    });
+
+    /*  if (numberOfLiveMatches > 0) {
+      numberOfLiveMatches -= 1;
+    } */
+
+    oddsData.slice(numberOfLiveMatches).map((item, index) => {
       let val = {
         site: "fortuna",
         home: {
           name: getTeamName(namesData[index][0].replace(/\n/g, "")),
-          rate: Number(item[3]), // 2 - 3. column
+          type: "neprohra",
+          rate: Number(item[3]), //  4. column //neprohra
         },
         host: {
           name: getTeamName(namesData[index][1].replace(/\n/g, "")),
-          rate: Number(item[4]), //4 - 4. column
+          type: "výhra",
+          rate: Number(item[2]), //3. column //výhra
         },
       };
-      serializedData.push(val);
+      let val1 = {
+        site: "fortuna",
+        home: {
+          name: getTeamName(namesData[index][0].replace(/\n/g, "")),
+          type: "výhra",
+          rate: Number(item[0]), //  4. column //neprohra
+        },
+        host: {
+          name: getTeamName(namesData[index][1].replace(/\n/g, "")),
+          type: "neprohra",
+          rate: Number(item[4]), //3. column //neprohra
+        },
+      };
+      if (this.newEvaluation) {
+        serializedData.push(val);
+      } else {
+        serializedData.push(val1);
+      }
     });
-    console.log(className, serializedData.length);
+    console.log(
+      `${className}${serializedData.length === 0 ? " načítání..." : " hotovo"}`
+    );
     if (serializedData.length === 0) {
       throw Error(`Nejsou žádné data. Možná event skončil ${this.url}`);
     }
+    console.log(serializedData);
     return serializedData;
   };
 }

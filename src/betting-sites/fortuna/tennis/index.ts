@@ -52,27 +52,30 @@ export class TennisFortuna {
           let val = {
             site: "fortuna",
             home: {
-              name:
-                getTeamName(namesData[index][0].replace(/\n/g, ""))?.split(
-                  " "
-                )[0] ?? "nevsázet",
-              rate: Number(item[0]) ?? 1, // 1. column
+              name: getTeamName(namesData[index][0].replace(/\n/g, ""))?.split(
+                " "
+              )[0],
+              rate: Number(item[0]), // 1. column
             },
             host: {
-              name:
-                getTeamName(namesData[index][1].replace(/\n/g, ""))?.split(
-                  " "
-                )[0] ?? "nevsázet",
-              rate: Number(item[1]) ?? 1, //2. column
+              name: getTeamName(namesData[index][1].replace(/\n/g, ""))?.split(
+                " "
+              )[0],
+              rate: Number(item[1]), //2. column
             },
           };
           serializedData.push(val);
         }
       });
-      console.log("TennisFortuna", serializedData.length);
+      console.log(
+        `${className}${
+          serializedData.length === 0 ? " načítání..." : " hotovo"
+        }`
+      );
       if (serializedData.length === 0) {
         console.log(`Nejsou žádné data. Možná event skončil ${this.url}`);
       }
+      console.log(serializedData);
       return serializedData;
     } catch (error) {
       console.log(error);

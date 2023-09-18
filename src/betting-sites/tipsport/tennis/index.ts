@@ -3,6 +3,7 @@ import { splitIntoArraysOfArray } from "../../../utils/split-into-arrays-of-arra
 import { webScrapping } from "../../../utils/web-scrapping";
 import { targetOddsElements, targetTeamNameElements } from "../config";
 
+const className = "TennisTipsport";
 export class TennisTipsport {
   url: string;
   numberOfScrapping: number;
@@ -24,7 +25,7 @@ export class TennisTipsport {
       if (this.numberOfScrapping < 10) {
         await this.getData();
       } else {
-        console.log("TennisTipsport", error);
+        console.log(className, error);
         return await this._serializeData([], []);
       }
     }
@@ -34,33 +35,32 @@ export class TennisTipsport {
     teamNames: string[],
     odds: string[]
   ): Promise<SerializedDataI[]> => {
-    try {
-      const oddsData = await splitIntoArraysOfArray(odds, 0, 2);
-      const namesData = teamNames;
-      const serializedData: any[] = [];
+    const oddsData = await splitIntoArraysOfArray(odds, 0, 2);
+    const namesData = teamNames;
+    const serializedData: any[] = [];
 
-      oddsData.map((item, index) => {
-        let val = {
-          site: "tipsport",
-          home: {
-            name: namesData[index][0]?.split(" ")[0],
-            rate: Number(item[0]),
-          },
-          host: {
-            name: namesData[index][1]?.split(" ")[0],
-            rate: Number(item[item.length - 1]),
-          },
-        };
-        serializedData.push(val);
-      });
-      console.log("TennisTipsport", serializedData.length);
-      if (serializedData.length === 0) {
-        throw Error(`Nejsou žádné data. Možná event skončil ${this.url}`);
-      }
-      return serializedData;
-    } catch (error) {
-      console.log(error);
-      return [];
+    oddsData.map((item, index) => {
+      let val = {
+        site: "tipsport",
+        home: {
+          name: namesData[index][0]?.split(" ")[0],
+          rate: Number(item[0]),
+        },
+        host: {
+          name: namesData[index][1]?.split(" ")[0],
+          rate: Number(item[item.length - 1]),
+        },
+      };
+      serializedData.push(val);
+    });
+
+    console.log(
+      `${className}${serializedData.length === 0 ? " načítání..." : " hotovo"}`
+    );
+    if (serializedData.length === 0) {
+      throw Error(`Nejsou žádné data. Možná event skončil ${this.url}`);
     }
+    console.log(serializedData);
+    return serializedData;
   };
 }

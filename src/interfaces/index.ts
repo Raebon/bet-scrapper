@@ -7,6 +7,7 @@ export interface SerializedDataI {
 export type TSubject = {
   name: string;
   rate: number;
+  type?: string;
   site?: TSites;
 };
 

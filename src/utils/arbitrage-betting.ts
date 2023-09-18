@@ -80,6 +80,7 @@ const divideAmount = (
     const home = {
       site: item.home.site!,
       name: item.home.name,
+      type: item.home.type,
       amount: homeAmout,
       profit: homeAmout * item.home.rate - desiredBet,
       rate: item.home.rate,
@@ -87,6 +88,7 @@ const divideAmount = (
     const host = {
       site: item.host.site!,
       name: item.host.name,
+      type: item.host.type,
       amount: (hostRateInversion / margin) * desiredBet,
       profit: hostAmout * item.host.rate - desiredBet,
       rate: item.host.rate,
@@ -100,9 +102,19 @@ const calculateMarginAndEvaluate = (
   data: SerializedChosenDataI[]
 ): SerializedChosenDataI[] | undefined => {
   const results: SerializedChosenDataI[] = [];
-  /*   data.push({
-    home: { site: "fortuna", name: "y", rate: 1.42 },
-    host: { site: "tipsport", name: "x", rate: 3.93 },
+  /* data.push({
+    home: {
+      site: "fortuna",
+      name: "Fortuna Hebar Pazardzhik - test",
+      type: "výhra",
+      rate: 2.1,
+    },
+    host: {
+      site: "tipsport",
+      name: "Tipsport Pirin Blagoevgrad - test",
+      type: "neprohra",
+      rate: 1.93,
+    },
   }); */
   data.forEach((item) => {
     if (item) {
@@ -110,9 +122,9 @@ const calculateMarginAndEvaluate = (
       const hostRate = item.host?.rate;
 
       const margin = (1 / homeRate) * 100 + (1 / hostRate) * 100;
-
+      console.log(item);
+      results.push({ ...item, margin });
       if (margin < 100) {
-        results.push({ ...item, margin });
       }
     }
   });

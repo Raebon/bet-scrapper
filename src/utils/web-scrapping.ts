@@ -55,7 +55,6 @@ const internalScrapeMethod = async (
       odds.push(textContent);
     }
   }
-
   await browser.close();
   return {
     names,

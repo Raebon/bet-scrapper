@@ -44,19 +44,24 @@ export class FootbalTipsport {
         site: "tipsport",
         home: {
           name: namesData[index][0],
+          type: "neprohra",
           rate: Number(item[1]),
         },
         host: {
           name: namesData[index][1],
+          type: "neprohra",
           rate: Number(item[item.length - 2]),
         },
       };
       serializedData.push(val);
     });
-    console.log(className, serializedData.length);
+    console.log(
+      `${className}${serializedData.length === 0 ? " načítání..." : " hotovo"}`
+    );
     if (serializedData.length === 0) {
       throw Error(`Nejsou žádné data. Možná event skončil ${this.url}`);
     }
+    console.log(serializedData);
     return serializedData;
   };
 }
