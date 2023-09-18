@@ -122,9 +122,9 @@ const calculateMarginAndEvaluate = (
       const hostRate = item.host?.rate;
 
       const margin = (1 / homeRate) * 100 + (1 / hostRate) * 100;
-      console.log(item);
-      results.push({ ...item, margin });
+
       if (margin < 100) {
+        results.push({ ...item, margin });
       }
     }
   });
