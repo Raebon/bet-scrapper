@@ -15,33 +15,23 @@ export class FootbalFortuna {
     this.newEvaluation = newEvaluation;
   }
   public getData = async () => {
-    try {
-      const scrappedData = await webScrapping(
-        this.url,
-        targetTeamNameElements,
-        targetOddsElements
-      );
-      const { names, odds } = scrappedData;
-      return await this._serializeData(names, odds);
-    } catch (error) {
-      if (this.numberOfScrapping < 10) {
-        await this.getData();
-      } else {
-        console.log(className, error);
-        return await this._serializeData([], []);
-      }
-    }
+    const scrappedData = await webScrapping(
+      this.url,
+      targetTeamNameElements,
+      targetOddsElements
+    );
+    const { names, odds } = scrappedData;
+    const data = this._serializeData(names, odds);
+    return data;
   };
 
-  private _serializeData = async (
+  private _serializeData = (
     names: string[],
     odds: string[]
-  ): Promise<SerializedDataI[]> => {
+  ): SerializedDataI[] => {
     const startColumn =
       this.url === "https://www.ifortuna.cz/sazeni/fotbal/fortuna-liga" ? 1 : 0;
-    const oddsData = (
-      await splitIntoArraysOfArray(odds, startColumn, 6)
-    ).reverse();
+    const oddsData = splitIntoArraysOfArray(odds, startColumn, 6).reverse();
     const namesData = names.reverse();
     const serializedData: any[] = [];
     let numberOfLiveMatches = 0;
@@ -92,7 +82,7 @@ export class FootbalFortuna {
       `${className}${serializedData.length === 0 ? " načítání..." : " hotovo"}`
     );
     if (serializedData.length === 0) {
-      throw Error(`Nejsou žádné data. Možná event skončil ${this.url}`);
+      console.log(`Nejsou žádné data. Možná event skončil ${this.url}`);
     }
     console.log(serializedData);
     return serializedData;

@@ -1,4 +1,4 @@
-export const splitIntoArraysOfArray = async (
+export const splitIntoArraysOfArray = (
   array: string[],
   startNumberOfColumn: number,
   numberOfColumn: number,

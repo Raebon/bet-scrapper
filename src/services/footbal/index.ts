@@ -3,34 +3,65 @@ import { FootbalTipsport } from "../../betting-sites/tipsport/footbal";
 import { SerializedDataI } from "../../interfaces";
 import { calculateArbitrageBetting } from "../../utils/arbitrage-betting";
 
+interface EvaluateResult {
+  result: any; // Zde můžete specifikovat typ výsledku
+  links: string[];
+}
+
 export class FootbalService {
   static async evaluate(
     tipsportLink: string,
     fortunaLink: string,
-    newEvaluation: boolean = false
-  ) {
+    newEvaluation: boolean = false,
+    retryCount: number = 3 // Počet pokusů
+  ): Promise<EvaluateResult | null> {
     const firstCzechLeaqueTipsport = new FootbalTipsport(tipsportLink);
     const firstCzechLeagueFortuna = new FootbalFortuna(
       fortunaLink,
       newEvaluation
     );
+
     try {
       const tipsportData = await firstCzechLeaqueTipsport.getData();
       const fortunaData = await firstCzechLeagueFortuna.getData();
 
-      const data = await calculateArbitrageBetting(
-        [
-          ...((tipsportData as SerializedDataI[]) ?? []),
-          ...((fortunaData as SerializedDataI[]) ?? []),
-        ] as SerializedDataI[],
-        1000
-      );
+      if (tipsportData && fortunaData) {
+        console.log("prošlo", tipsportData, fortunaData);
+        const data = await calculateArbitrageBetting(
+          [
+            ...(tipsportData as SerializedDataI[]),
+            ...(fortunaData as SerializedDataI[]),
+          ],
+          1000
+        );
+        return {
+          result: data,
+          links: [tipsportLink, fortunaLink],
+        };
+      } else {
+        console.log("Nepodařilo se načíst data z Tipsport nebo Fortuna.");
+        if (retryCount > 0) {
+          console.log(`Opakování pokusu (${retryCount} zbývá)...`);
+          return this.evaluate(
+            tipsportLink,
+            fortunaLink,
+            newEvaluation,
+            retryCount - 1
+          );
+        } else {
+          console.log("Vyčerpány všechny pokusy.");
+          return {
+            result: [],
+            links: [tipsportLink, fortunaLink],
+          };
+        }
+      }
+    } catch (error) {
+      console.error("Chyba při vyhodnocování:", error);
       return {
-        result: data,
+        result: [],
         links: [tipsportLink, fortunaLink],
       };
-    } catch (error) {
-      console.log("FootbalService", error);
     }
   }
 }

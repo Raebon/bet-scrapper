@@ -1,4 +1,4 @@
-import { customRenaming } from "../utils/renaming";
+import { customRenaming, odstranDiakritiku } from "../utils/renaming";
 
 const VocMap = new Map([
   ["Č.Budějovice", "České Budějovice"],
@@ -11,6 +11,6 @@ export const getTeamName = (name: string) => {
   if (!name) {
     return "nevsazet";
   }
-  let newname = customRenaming(name);
-  return VocMap.has(name) ? customRenaming(VocMap.get(name)!) : newname;
+  let newname = odstranDiakritiku(name);
+  return VocMap.has(name) ? odstranDiakritiku(VocMap.get(name)!) : newname;
 };

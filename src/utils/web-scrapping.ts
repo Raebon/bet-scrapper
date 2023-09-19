@@ -23,7 +23,7 @@ const internalScrapeMethod = async (
   });
   const page = await browser.newPage();
   await page.goto(url);
-  //console.log(page);
+
   const targetTeamNameElementsPupperteered = await page.$x(
     targetTeamNameElements
   );
@@ -35,10 +35,7 @@ const internalScrapeMethod = async (
 
   if (targetTeamNameElementsPupperteered.length > 0) {
     for (const item of targetTeamNameElementsPupperteered) {
-      const textContent: any = await page.evaluate(
-        (el) => el.textContent,
-        item
-      );
+      const textContent: any = await item.evaluate((el) => el.textContent);
       if (textContent !== null) {
         names.push(textContent.split(" - "));
       }
@@ -47,14 +44,11 @@ const internalScrapeMethod = async (
 
   if (targetOddsElementsPupperteered.length > 0) {
     for (const item of targetOddsElementsPupperteered) {
-      const textContent: any = await page.evaluate(
-        (el) => el.textContent,
-        item
-      );
-
+      const textContent: any = await item.evaluate((el) => el.textContent);
       odds.push(textContent);
     }
   }
+
   await browser.close();
   return {
     names,
