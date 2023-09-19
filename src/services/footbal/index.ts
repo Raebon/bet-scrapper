@@ -2,6 +2,7 @@ import { FootbalFortuna } from "../../betting-sites/fortuna/footbal";
 import { FootbalTipsport } from "../../betting-sites/tipsport/footbal";
 import { SerializedDataI } from "../../interfaces";
 import { calculateArbitrageBetting } from "../../utils/arbitrage-betting";
+import { arbitrageBettingV2 } from "../../utils/v2-arbitrage-betting";
 
 interface EvaluateResult {
   result: any; // Zde můžete specifikovat typ výsledku
@@ -13,6 +14,7 @@ export class FootbalService {
     tipsportLink: string,
     fortunaLink: string,
     newEvaluation: boolean = false,
+    desiredBet: number = 1000,
     retryCount: number = 3 // Počet pokusů
   ): Promise<EvaluateResult | null> {
     const firstCzechLeaqueTipsport = new FootbalTipsport(tipsportLink);
@@ -26,13 +28,12 @@ export class FootbalService {
       const fortunaData = await firstCzechLeagueFortuna.getData();
 
       if (tipsportData && fortunaData) {
-        console.log("prošlo", tipsportData, fortunaData);
-        const data = await calculateArbitrageBetting(
+        const data = await arbitrageBettingV2(
           [
             ...(tipsportData as SerializedDataI[]),
             ...(fortunaData as SerializedDataI[]),
           ],
-          1000
+          desiredBet
         );
         return {
           result: data,
@@ -46,6 +47,7 @@ export class FootbalService {
             tipsportLink,
             fortunaLink,
             newEvaluation,
+            desiredBet,
             retryCount - 1
           );
         } else {

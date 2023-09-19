@@ -7,11 +7,9 @@ import { targetOddsElements, targetTeamNameElements } from "../config";
 const className = "FootbalFortuna";
 export class FootbalFortuna {
   url: string;
-  numberOfScrapping: number;
   newEvaluation: boolean;
   constructor(url: string, newEvaluation: boolean) {
     this.url = url;
-    this.numberOfScrapping = 0;
     this.newEvaluation = newEvaluation;
   }
   public getData = async () => {
@@ -46,28 +44,33 @@ export class FootbalFortuna {
     } */
 
     oddsData.slice(numberOfLiveMatches).map((item, index) => {
+      const homeName = getTeamName(namesData[index][0].replace(/\n/g, ""));
+      const hostName = getTeamName(namesData[index][1].replace(/\n/g, ""));
+      const matchKey = `${homeName} vs ${hostName}`;
       let val = {
         site: "fortuna",
+        matchKey,
         home: {
-          name: getTeamName(namesData[index][0].replace(/\n/g, "")),
+          name: homeName,
           type: "neprohra",
           rate: Number(item[3]), //  4. column //neprohra
         },
         host: {
-          name: getTeamName(namesData[index][1].replace(/\n/g, "")),
+          name: hostName,
           type: "výhra",
           rate: Number(item[2]), //3. column //výhra
         },
       };
       let val1 = {
         site: "fortuna",
+        matchKey: ``,
         home: {
-          name: getTeamName(namesData[index][0].replace(/\n/g, "")),
+          name: homeName,
           type: "výhra",
           rate: Number(item[0]), //  4. column //neprohra
         },
         host: {
-          name: getTeamName(namesData[index][1].replace(/\n/g, "")),
+          name: hostName,
           type: "neprohra",
           rate: Number(item[4]), //3. column //neprohra
         },
@@ -84,7 +87,7 @@ export class FootbalFortuna {
     if (serializedData.length === 0) {
       console.log(`Nejsou žádné data. Možná event skončil ${this.url}`);
     }
-    console.log(serializedData);
+    console.log(serializedData.length);
     return serializedData;
   };
 }

@@ -13,7 +13,8 @@ export class TennisController {
     try {
       const data = await TennisService.evaluate(
         params.tipsport,
-        params.fortuna
+        params.fortuna,
+        params.desiredBet
       );
       return res.status(200).send({ data });
     } catch (error) {

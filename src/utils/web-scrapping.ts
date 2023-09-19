@@ -13,45 +13,69 @@ export const webScrapping = async (
   return internalScrapeMethod(url, targetTeamNameElements, targetOddsElements);
 };
 
-const internalScrapeMethod = async (
+async function internalScrapeMethod(
   url: string,
   targetTeamNameElements: string,
   targetOddsElements: string
-) => {
+) {
   const browser = await puppeteer.launch({
     headless: "new",
   });
   const page = await browser.newPage();
   await page.goto(url);
 
-  const targetTeamNameElementsPupperteered = await page.$x(
-    targetTeamNameElements
-  );
+  try {
+    await page.waitForXPath(targetTeamNameElements);
+    await page.waitForXPath(targetOddsElements);
 
-  const targetOddsElementsPupperteered = await page.$x(targetOddsElements);
+    const targetTeamNameElementsPupperteered = await page.$x(
+      targetTeamNameElements
+    );
 
-  const names: string[] = [];
-  const odds: string[] = [];
+    const targetOddsElementsPupperteered = await page.$x(targetOddsElements);
 
-  if (targetTeamNameElementsPupperteered.length > 0) {
-    for (const item of targetTeamNameElementsPupperteered) {
-      const textContent: any = await item.evaluate((el) => el.textContent);
-      if (textContent !== null) {
-        names.push(textContent.split(" - "));
+    const names: string[] = [];
+    const odds: string[] = [];
+
+    if (targetTeamNameElementsPupperteered.length > 0) {
+      for (const item of targetTeamNameElementsPupperteered) {
+        const textContent: any = await page.evaluate(
+          (el) => el.textContent,
+          item
+        );
+        if (textContent !== null) {
+          names.push(textContent.split(" - "));
+        }
       }
     }
-  }
 
-  if (targetOddsElementsPupperteered.length > 0) {
-    for (const item of targetOddsElementsPupperteered) {
-      const textContent: any = await item.evaluate((el) => el.textContent);
-      odds.push(textContent);
+    if (targetOddsElementsPupperteered.length > 0) {
+      for (const item of targetOddsElementsPupperteered) {
+        const textContent: any = await page.evaluate(
+          (el) => el.textContent,
+          item
+        );
+
+        odds.push(textContent);
+      }
     }
-  }
 
-  await browser.close();
-  return {
-    names,
-    odds,
-  };
-};
+    return {
+      names,
+      odds,
+    };
+  } catch (error: any) {
+    if (error.message.includes("The document has mutated")) {
+      // Opakovat operace nebo počkat
+      return internalScrapeMethod(
+        url,
+        targetTeamNameElements,
+        targetOddsElements
+      );
+    } else {
+      throw error;
+    }
+  } finally {
+    await browser.close();
+  }
+}

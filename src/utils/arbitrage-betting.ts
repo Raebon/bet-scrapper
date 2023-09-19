@@ -102,20 +102,7 @@ const calculateMarginAndEvaluate = (
   data: SerializedChosenDataI[]
 ): SerializedChosenDataI[] | undefined => {
   const results: SerializedChosenDataI[] = [];
-  /* data.push({
-    home: {
-      site: "fortuna",
-      name: "Fortuna Hebar Pazardzhik - test",
-      type: "výhra",
-      rate: 2.1,
-    },
-    host: {
-      site: "tipsport",
-      name: "Tipsport Pirin Blagoevgrad - test",
-      type: "neprohra",
-      rate: 1.93,
-    },
-  }); */
+
   data.forEach((item) => {
     if (item) {
       const homeRate = item.home?.rate;

@@ -1,53 +1,46 @@
 import { SerializedDataI } from "../../../interfaces";
 import { splitIntoArraysOfArray } from "../../../utils/split-into-arrays-of-array";
 import { webScrapping } from "../../../utils/web-scrapping";
+import { getTeamName } from "../../../voc";
 import { targetOddsElements, targetTeamNameElements } from "../config";
 
 const className = "TennisTipsport";
 export class TennisTipsport {
   url: string;
-  numberOfScrapping: number;
   constructor(url: string) {
     this.url = url;
-    this.numberOfScrapping = 0;
   }
   public getData = async () => {
-    try {
-      this.numberOfScrapping += 1;
-      const scrappedData = await webScrapping(
-        this.url,
-        targetTeamNameElements,
-        targetOddsElements
-      );
-      const { names, odds } = scrappedData;
-      return await this._serializeData(names, odds);
-    } catch (error) {
-      if (this.numberOfScrapping < 10) {
-        await this.getData();
-      } else {
-        console.log(className, error);
-        return await this._serializeData([], []);
-      }
-    }
+    const scrappedData = await webScrapping(
+      this.url,
+      targetTeamNameElements,
+      targetOddsElements
+    );
+    const { names, odds } = scrappedData;
+    return this._serializeData(names, odds);
   };
 
-  private _serializeData = async (
+  private _serializeData = (
     teamNames: string[],
     odds: string[]
-  ): Promise<SerializedDataI[]> => {
-    const oddsData = await splitIntoArraysOfArray(odds, 0, 2);
+  ): SerializedDataI[] => {
+    const oddsData = splitIntoArraysOfArray(odds, 0, 2);
     const namesData = teamNames;
     const serializedData: any[] = [];
 
     oddsData.map((item, index) => {
+      const homeName = getTeamName(namesData[index][0]?.split(" ")[0]);
+      const hostName = getTeamName(namesData[index][1]?.split(" ")[0]);
+      const matchKey = `${homeName} vs ${hostName}`;
       let val = {
         site: "tipsport",
+        matchKey,
         home: {
-          name: namesData[index][0]?.split(" ")[0],
+          name: homeName,
           rate: Number(item[0]),
         },
         host: {
-          name: namesData[index][1]?.split(" ")[0],
+          name: hostName,
           rate: Number(item[item.length - 1]),
         },
       };

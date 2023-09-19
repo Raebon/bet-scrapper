@@ -7,13 +7,10 @@ import { targetOddsElements, targetTeamNameElements } from "../config";
 const className = "FootbalTipsport";
 export class FootbalTipsport {
   url: string;
-  numberOfScrapping: number;
   constructor(url: string) {
     this.url = url;
-    this.numberOfScrapping = 0;
   }
   public getData = async () => {
-    this.numberOfScrapping += 1;
     const scrappedData = await webScrapping(
       this.url,
       targetTeamNameElements,
@@ -31,17 +28,20 @@ export class FootbalTipsport {
     const oddsData = splitIntoArraysOfArray(odds, 0, 5);
     const namesData = teamNames;
     const serializedData: any[] = [];
-
     oddsData.map((item, index) => {
+      const homeName = getTeamName(namesData[index][0]);
+      const hostName = getTeamName(namesData[index][1]);
+      const matchKey = `${homeName} vs ${hostName}`;
       let val = {
         site: "tipsport",
+        matchKey,
         home: {
-          name: getTeamName(namesData[index][0]),
+          name: homeName,
           type: "neprohra",
           rate: Number(item[1]),
         },
         host: {
-          name: getTeamName(namesData[index][1]),
+          name: hostName,
           type: "neprohra",
           rate: Number(item[item.length - 2]),
         },
@@ -54,7 +54,7 @@ export class FootbalTipsport {
     if (serializedData.length === 0) {
       console.log(`Nejsou žádné data. Možná event skončil ${this.url}`);
     }
-    console.log(serializedData);
+    console.log(serializedData.length);
     return serializedData;
   };
 }

@@ -14,7 +14,8 @@ export class FootbalController {
       const data = await FootbalService.evaluate(
         params.tipsport,
         params.fortuna,
-        params.newEvaluation
+        params.newEvaluation,
+        params.desiredBet
       );
       return res.status(200).send({ data });
     } catch (error) {
