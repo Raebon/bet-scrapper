@@ -5,7 +5,7 @@ import { calculateArbitrageBetting } from "../../utils/arbitrage-betting";
 import { arbitrageBettingV2 } from "../../utils/v2-arbitrage-betting";
 
 interface EvaluateResult {
-  result: any; // Zde můžete specifikovat typ výsledku
+  result: any;
   links: string[];
 }
 

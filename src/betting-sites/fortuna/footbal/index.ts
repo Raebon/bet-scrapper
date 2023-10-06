@@ -27,21 +27,16 @@ export class FootbalFortuna {
     names: string[],
     odds: string[]
   ): SerializedDataI[] => {
-    const startColumn =
-      this.url === "https://www.ifortuna.cz/sazeni/fotbal/fortuna-liga" ? 1 : 0;
-    const oddsData = splitIntoArraysOfArray(odds, startColumn, 6).reverse();
+    // const startColumn = this.url === "https://www.ifortuna.cz/sazeni/fotbal/fortuna-liga" ? 1 : 0;
+    const oddsData = splitIntoArraysOfArray(odds, 0, 6).reverse();
     const namesData = names.reverse();
     const serializedData: any[] = [];
     let numberOfLiveMatches = 0;
-    oddsData.map((item, index) => {
+    /*     oddsData.map((item, index) => {
       if (!namesData[index]) {
         numberOfLiveMatches += 1;
       }
-    });
-
-    /*  if (numberOfLiveMatches > 0) {
-      numberOfLiveMatches -= 1;
-    } */
+    }); */
 
     oddsData.slice(numberOfLiveMatches).map((item, index) => {
       const homeName = getTeamName(namesData[index][0].replace(/\n/g, ""));

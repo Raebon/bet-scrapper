@@ -21,10 +21,10 @@ async function internalScrapeMethod(
   const browser = await puppeteer.launch({
     headless: "new",
   });
-  const page = await browser.newPage();
-  await page.goto(url);
-
   try {
+    const page = await browser.newPage();
+    await page.goto(url);
+    console.log("start webscraping");
     await page.waitForXPath(targetTeamNameElements);
     await page.waitForXPath(targetOddsElements);
 
@@ -66,7 +66,6 @@ async function internalScrapeMethod(
     };
   } catch (error: any) {
     if (error.message.includes("The document has mutated")) {
-      // Opakovat operace nebo počkat
       return internalScrapeMethod(
         url,
         targetTeamNameElements,
