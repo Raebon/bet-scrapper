@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer";
+require("dotenv").config();
 
 interface WebScrappingRes {
   names: string[];
@@ -19,6 +20,11 @@ async function internalScrapeMethod(
   targetOddsElements: string
 ) {
   const browser = await puppeteer.launch({
+    args: ["--disable-setuid-sandbox", "--no-sandbox", "--no-zygote"],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXUTABLE_PATH
+        : puppeteer.executablePath(),
     headless: "new",
   });
   try {
