@@ -29,7 +29,7 @@ async function internalScrapeMethod(
   });
   try {
     const page = await browser.newPage();
-    await page.goto(url);
+    await page.goto(url, { timeout: 0 });
     console.log("start webscraping");
     await page.waitForXPath(targetTeamNameElements);
     await page.waitForXPath(targetOddsElements);
