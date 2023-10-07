@@ -15,9 +15,9 @@ class ArbitrageRoutes {
     this.router.get("/footbal", this.footbalController.getData);
     this.router.get("/tennis", this.tennisController.getData);
     //for uptimebot to keep web service alive
-    this.router.head("/reload", (req, res) => {
+    this.router.get("/reload", (req, res) => {
       console.log("reload");
-      return res.status(200).end();
+      return res.status(200).send("reload");
     });
   }
 }
