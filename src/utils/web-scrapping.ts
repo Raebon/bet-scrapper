@@ -28,10 +28,9 @@ async function internalScrapeMethod(
     headless: "new",
   });
   try {
-    const page = await browser.newPage();
-    await page.setDefaultNavigationTimeout(0);
-    await page.goto(url);
     console.log("start webscraping");
+    const page = await browser.newPage();
+    await page.goto(url, { timeout: 0 });
     await page.waitForXPath(targetTeamNameElements);
     await page.waitForXPath(targetOddsElements);
 
